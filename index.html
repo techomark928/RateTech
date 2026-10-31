@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PriceCheck KZ — Калькулятор рынка б/у и новой техники</title>
+    <style>
+        :root {
+            --bg-color: #0f0f11;
+            --card-bg: #18181b;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #27272a;
+            --blue-accent: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Поиск и фильтры */
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--blue-accent);
+        }
+
+        .toggle-container {
+            display: flex;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: var(--blue-accent);
+            color: white;
+        }
+
+        /* Карточка гаджета */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .device-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .badge-count {
+            font-size: 11px;
+            background: #27272a;
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .price-ranges {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .range-box {
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .range-box.low { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .range-box.mid { background: rgba(245, 158, 11, 0.1); color: var(--accent-yellow); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .range-box.high { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .range-val {
+            font-weight: 700;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding-top: 10px;
+            border-top: 1px solid #27272a;
+            color: var(--text-muted);
+        }
+
+        .stats-grid span strong {
+            color: white;
+        }
+
+        .trend-down { color: var(--accent-green); }
+        .trend-up { color: var(--accent-red); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>PriceCheck KZ 🇰🇿</h1>
+        <p class="subtitle">Аналитика б/у и рынка новых устройств в Казахстане</p>
+    </header>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="filterDevices()" placeholder="Поиск (например: iPhone 13, PS5, Redmi)...">
+    </div>
+
+    <div class="toggle-container">
+        <button class="toggle-btn active" id="btnBu" onclick="setMode('bu')">Б/У Рынок</button>
+        <button class="toggle-btn" id="btnNew" onclick="setMode('new')">Новые устройства</button>
+    </div>
+
+    <div class="cards-list" id="cardsContainer">
+        <!-- Карточки загружаются через JavaScript -->
+    </div>
+</div>
+
+<script>
+    const database = [
+        // APPLE
+        {
+            name: "iPhone XR 64 GB",
+            bu: { low: "35-43 тыс ₸", mid: "44-55 тыс ₸", high: "56-65 тыс ₸", avg: "49 000 ₸", median: "48 000 ₸", count: 143, trend: "-4.5%" },
+            new: { low: "Сняты с производства", mid: "110-130 тыс ₸ (остатки)", high: "140 тыс ₸", avg: "120 000 ₸", median: "120 000 ₸", count: 12, trend: "0%" }
+        },
+        {
+            name: "iPhone 11 128 GB",
+            bu: { low: "75-88 тыс ₸", mid: "90-110 тыс ₸", high: "115-130 тыс ₸", avg: "98 000 ₸", median: "95 000 ₸", count: 210, trend: "-2.1%" },
+            new: { low: "185 000 ₸", mid: "200 000 ₸", high: "220 000 ₸", avg: "205 000 ₸", median: "200 000 ₸", count: 45, trend: "-1.0%" }
+        },
+        {
+            name: "iPhone 13 128 GB",
+            bu: { low: "170-190 тыс ₸", mid: "195-230 тыс ₸", high: "235-260 тыс ₸", avg: "215 000 ₸", median: "210 000 ₸", count: 320, trend: "-3.8%" },
+            new: { low: "280 000 ₸", mid: "305 000 ₸", high: "330 000 ₸", avg: "310 000 ₸", median: "305 000 ₸", count: 88, trend: "-1.5%" }
+        },
+        {
+            name: "iPhone 15 Pro 128 GB",
+            bu: { low: "380-410 тыс ₸", mid: "420-470 тыс ₸", high: "480-520 тыс ₸", avg: "445 000 ₸", median: "440 000 ₸", count: 95, trend: "-5.0%" },
+            new: { low: "510 000 ₸", mid: "550 000 ₸", high: "600 000 ₸", avg: "560 000 ₸", median: "550 000 ₸", count: 60, trend: "-2.3%" }
+        },
+        // PLAYSTATION
+        {
+            name: "Sony PlayStation 4 Slim 500GB",
+            bu: { low: "60-72 тыс ₸", mid: "75-90 тыс ₸", high: "95-110 тыс ₸", avg: "82 000 ₸", median: "80 000 ₸", count: 180, trend: "-1.2%" },
+            new: { low: "140 000 ₸", mid: "160 000 ₸", high: "180 000 ₸", avg: "162 000 ₸", median: "160 000 ₸", count: 15, trend: "0%" }
+        },
+        {
+            name: "Sony PlayStation 5 (Digital/Disc)",
+            bu: { low: "170-190 тыс ₸", mid: "195-230 тыс ₸", high: "235-270 тыс ₸", avg: "210 000 ₸", median: "205 000 ₸", count: 140, trend: "-3.0%" },
+            new: { low: "245 000 ₸", mid: "275 000 ₸", high: "310 000 ₸", avg: "280 000 ₸", median: "275 000 ₸", count: 70, trend: "-0.8%" }
+        },
+        // SAMSUNG & REDMI
+        {
+            name: "Samsung Galaxy A54 128 GB",
+            bu: { low: "70-82 тыс ₸", mid: "85-105 тыс ₸", high: "110-125 тыс ₸", avg: "95 000 ₸", median: "92 000 ₸", count: 115, trend: "-4.0%" },
+            new: { low: "135 000 ₸", mid: "155 000 ₸", high: "175 000 ₸", avg: "158 000 ₸", median: "155 000 ₸", count: 90, trend: "-2.0%" }
+        },
+        {
+            name: "Xiaomi Redmi Note 12 128 GB",
+            bu: { low: "40-48 тыс ₸", mid: "50-65 тыс ₸", high: "68-78 тыс ₸", avg: "58 000 ₸", median: "55 000 ₸", count: 205, trend: "-6.1%" },
+            new: { low: "75 000 ₸", mid: "88 000 ₸", high: "100 000 ₸", avg: "89 000 ₸", median: "88 000 ₸", count: 130, trend: "-3.5%" }
+        }
+    ];
+
+    let currentMode = 'bu';
+
+    function renderCards(items) {
+        const container = document.getElementById('cardsContainer');
+        container.innerHTML = '';
+
+        items.forEach(item => {
+            const data = item[currentMode];
+            const cardHtml = `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="device-title">${item.name}</div>
+                        <div class="badge-count">${data.count} предл.</div>
+                    </div>
+
+                    <div class="price-ranges">
+                        <div class="range-box low">
+                            🟢 Ниже рынка
+                            <div class="range-val">${data.low}</div>
+                        </div>
+                        <div class="range-box mid">
+                            🟡 Рынок
+                            <div class="range-val">${data.mid}</div>
+                        </div>
+                        <div class="range-box high">
+                            🔴 Выше рынка
+                            <div class="range-val">${data.high}</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <span>Средняя: <strong>${data.avg}</strong></span>
+                        <span>Медианная: <strong>${data.median}</strong></span>
+                        <span class="trend-down">30 дн: ${data.trend}</span>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += cardHtml;
+        });
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('btnBu').classList.toggle('active', mode === 'bu');
+        document.getElementById('btnNew').classList.toggle('active', mode === 'new');
+        filterDevices();
+    }
+
+    function filterDevices() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = database.filter(item => item.name.toLowerCase().includes(query));
+        renderCards(filtered);
+    }
+
+    // Инициализация
+    renderCards(database);
+</script>
+
+</body>
+  </html>
+ 
