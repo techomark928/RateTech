@@ -14,28 +14,39 @@
       --green: #22c55e;
       --yellow: #eab308;
       --red: #ef4444;
+      --pill-bg: #1a1a1f;
+      --pill-active: #ffffff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg-color); color: var(--accent-color); padding: 20px 15px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 680px; }
-    header { margin-bottom: 20px; text-align: center; }
+    
+    header { margin-bottom: 16px; text-align: center; }
     .logo { font-size: 26px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 4px; }
     .subtitle { font-size: 13px; color: var(--subtext); }
     
-    .search-box { margin-bottom: 16px; }
-    input[type="text"] { width: 100%; padding: 14px 16px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 15px; outline: none; }
+    .search-box { margin-bottom: 12px; }
+    input[type="text"] { width: 100%; padding: 14px 16px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 15px; outline: none; transition: border-color 0.2s; }
     input[type="text"]:focus { border-color: #555; }
 
-    .filters { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-btn { flex: 1; min-width: 100px; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--subtext); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
+    /* Категории (фильтры) */
+    .categories-scroll { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 4px; scrollbar-width: none; }
+    .categories-scroll::-webkit-scrollbar { display: none; }
+    .cat-pill { background: var(--pill-bg); border: 1px solid var(--border-color); color: var(--subtext); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .cat-pill.active { background: var(--pill-active); color: #000; border-color: var(--pill-active); }
+
+    /* Состояния (Б/У, Новый, Дефект) */
+    .filters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .filter-group { display: flex; gap: 8px; }
+    .filter-btn { flex: 1; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--subtext); border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.2s; }
     .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
     .filter-btn.defect-active { background: var(--red); color: #fff; border-color: var(--red); }
 
+    /* Карточки устройств */
     .device-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
-    .device-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-    .device-category { font-size: 11px; color: var(--subtext); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .device-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    .device-category { font-size: 11px; color: var(--subtext); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0d0d0f; padding: 12px; border-radius: 10px; }
     .price-item { text-align: center; }
@@ -46,7 +57,7 @@
     .price-value.market { color: var(--yellow); }
     .price-value.high { color: var(--subtext); }
     .price-value.defect { color: var(--red); }
-    .empty-msg { text-align: center; color: var(--subtext); padding: 30px; font-size: 14px; }
+    .empty-msg { text-align: center; color: var(--subtext); padding: 40px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -58,7 +69,17 @@
   </header>
 
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Поиск (айфон 15, редми 9а, самсунг а12, пс4...)" oninput="render()">
+    <input type="text" id="searchInput" placeholder="Поиск (айфон 11, редми 9, пс4 слим...)" oninput="render()">
+  </div>
+
+  <!-- Быстрые категории -->
+  <div class="categories-scroll">
+    <button class="cat-pill active" onclick="setCategory('all', this)">Все</button>
+    <button class="cat-pill" onclick="setCategory('Apple', this)">Apple</button>
+    <button class="cat-pill" onclick="setCategory('Samsung', this)">Samsung</button>
+    <button class="cat-pill" onclick="setCategory('Xiaomi', this)">Xiaomi / Redmi</button>
+    <button class="cat-pill" onclick="setCategory('Poco', this)">Poco</button>
+    <button class="cat-pill" onclick="setCategory('Console', this)">Консоли</button>
   </div>
 
   <div class="filters">
@@ -73,4 +94,165 @@
 </div>
 
 <script>
-  const
+  const devices = [
+    // ================= APPLE IPHONE =================
+    { name: "Apple iPhone 7 / 7 Plus", ru: "айфон 7 плюс iphone 7 plus", category: "Apple", low: 18000, market: 28000, high: 38000, defectLow: 7000, defectMarket: 13000, newMarket: 55000 },
+    { name: "Apple iPhone 8 / 8 Plus", ru: "айфон 8 плюс iphone 8 plus", category: "Apple", low: 26000, market: 38000, high: 50000, defectLow: 11000, defectMarket: 18000, newMarket: 70000 },
+    { name: "Apple iPhone X / XR", ru: "айфон х хр iphone x xr", category: "Apple", low: 38000, market: 50000, high: 60000, defectLow: 18000, defectMarket: 27000, newMarket: 98000 },
+    { name: "Apple iPhone XS / XS Max", ru: "айфон хс макс iphone xs max", category: "Apple", low: 45000, market: 62000, high: 78000, defectLow: 22000, defectMarket: 34000, newMarket: 120000 },
+    { name: "Apple iPhone 11 64GB", ru: "айфон 11 iphone 11", category: "Apple", low: 48000, market: 58000, high: 70000, defectLow: 25000, defectMarket: 35000, newMarket: 140000 },
+    { name: "Apple iPhone 11 Pro / Pro Max", ru: "айфон 11 про макс iphone 11 pro max", category: "Apple", low: 70000, market: 90000, high: 110000, defectLow: 38000, defectMarket: 52000, newMarket: 190000 },
+    { name: "Apple iPhone 12 / 12 Mini", ru: "айфон 12 мини iphone 12 mini", category: "Apple", low: 80000, market: 105000, high: 125000, defectLow: 45000, defectMarket: 65000, newMarket: 200000 },
+    { name: "Apple iPhone 12 Pro / Pro Max", ru: "айфон 12 про макс iphone 12 pro max", category: "Apple", low: 130000, market: 160000, high: 185000, defectLow: 75000, defectMarket: 100000, newMarket: 260000 },
+    { name: "Apple iPhone 13 / 13 Mini", ru: "айфон 13 мини iphone 13 mini", category: "Apple", low: 125000, market: 155000, high: 178000, defectLow: 70000, defectMarket: 95000, newMarket: 250000 },
+    { name: "Apple iPhone 13 Pro / Pro Max", ru: "айфон 13 про макс iphone 13 pro max", category: "Apple", low: 190000, market: 225000, high: 255000, defectLow: 110000, defectMarket: 140000, newMarket: 350000 },
+    { name: "Apple iPhone 14 / 14 Plus", ru: "айфон 14 плюс iphone 14 plus", category: "Apple", low: 185000, market: 220000, high: 250000, defectLow: 105000, defectMarket: 135000, newMarket: 320000 },
+    { name: "Apple iPhone 14 Pro / Pro Max", ru: "айфон 14 про макс iphone 14 pro max", category: "Apple", low: 255000, market: 295000, high: 335000, defectLow: 150000, defectMarket: 195000, newMarket: 430000 },
+    { name: "Apple iPhone 15 / 15 Plus", ru: "айфон 15 плюс iphone 15 plus", category: "Apple", low: 260000, market: 300000, high: 340000, defectLow: 160000, defectMarket: 200000, newMarket: 400000 },
+    { name: "Apple iPhone 15 Pro / Pro Max", ru: "айфон 15 про макс iphone 15 pro max", category: "Apple", low: 340000, market: 420000, high: 500000, defectLow: 220000, defectMarket: 290000, newMarket: 610000 },
+
+    // ================= SAMSUNG GALAXY =================
+    { name: "Samsung Galaxy A01 Core / A01", ru: "самсунг а01 кор a01 core", category: "Samsung", low: 4000, market: 7000, high: 10000, defectLow: 1500, defectMarket: 3000, newMarket: 22000 },
+    { name: "Samsung Galaxy A02 / A03 / A03s", ru: "самсунг а02 а03 a02 a03", category: "Samsung", low: 10000, market: 16000, high: 22000, defectLow: 4000, defectMarket: 7500, newMarket: 36000 },
+    { name: "Samsung Galaxy A10 / A11 / A12", ru: "самсунг а10 а11 а12 a12", category: "Samsung", low: 20000, market: 28000, high: 36000, defectLow: 8000, defectMarket: 13000, newMarket: 52000 },
+    { name: "Samsung Galaxy A13 / A14 / A15", ru: "самсунг а13 а14 а15 a13 a14", category: "Samsung", low: 28000, market: 38000, high: 48000, defectLow: 12000, defectMarket: 18000, newMarket: 65000 },
+    { name: "Samsung Galaxy A22 / A23 / A24", ru: "самсунг а22 а23 а24 a23", category: "Samsung", low: 32000, market: 44000, high: 54000, defectLow: 14000, defectMarket: 20000, newMarket: 75000 },
+    { name: "Samsung Galaxy A32 / A33 / A34", ru: "самсунг а32 а33 а34 a34", category: "Samsung", low: 42000, market: 60000, high: 78000, defectLow: 18000, defectMarket: 28000, newMarket: 110000 },
+    { name: "Samsung Galaxy A51 / A52 / A53 / A54", ru: "самсунг а51 а52 а53 а54 a54", category: "Samsung", low: 45000, market: 68000, high: 95000, defectLow: 22000, defectMarket: 35000, newMarket: 135000 },
+    { name: "Samsung Galaxy S10 / S20 FE", ru: "самсунг с10 с20 фе s20 fe", category: "Samsung", low: 45000, market: 62000, high: 78000, defectLow: 22000, defectMarket: 32000, newMarket: 120000 },
+    { name: "Samsung Galaxy S21 / S22 / S23", ru: "самсунг с21 с22 с23 s21 s22 s23", category: "Samsung", low: 90000, market: 130000, high: 170000, defectLow: 45000, defectMarket: 65000, newMarket: 240000 },
+    { name: "Samsung Galaxy S23 Ultra", ru: "самсунг с23 ультра s23 ultra", category: "Samsung", low: 260000, market: 300000, high: 340000, defectLow: 160000, defectMarket: 200000, newMarket: 470000 },
+
+    // ================= XIAOMI / REDMI =================
+    { name: "Xiaomi Redmi 1 / 1S", ru: "редми 1 1с сяоми redmi 1s", category: "Xiaomi", low: 2000, market: 4500, high: 6500, defectLow: 1000, defectMarket: 2000, newMarket: 14000 },
+    { name: "Xiaomi Redmi 2 / 3 / 4", ru: "редми 2 3 4", category: "Xiaomi", low: 4000, market: 8000, high: 13000, defectLow: 1500, defectMarket: 4000, newMarket: 25000 },
+    { name: "Xiaomi Redmi 5 / 6 / 7 / 8", ru: "редми 5 6 7 8", category: "Xiaomi", low: 8000, market: 14000, high: 20000, defectLow: 3500, defectMarket: 7000, newMarket: 35000 },
+    { name: "Xiaomi Redmi 9 / 9A / 9C / 9T", ru: "редми 9 9а 9с 9т", category: "Xiaomi", low: 13000, market: 20000, high: 27000, defectLow: 5000, defectMarket: 9500, newMarket: 44000 },
+    { name: "Xiaomi Redmi 10 / 10C / 12C / 12", ru: "редми 10 10с 12с 12", category: "Xiaomi", low: 20000, market: 28000, high: 36000, defectLow: 8500, defectMarket: 14000, newMarket: 55000 },
+    { name: "Xiaomi Redmi Note 8 / 9 / 10 Pro", ru: "редми нот 8 9 10 про", category: "Xiaomi", low: 25000, market: 40000, high: 55000, defectLow: 12000, defectMarket: 20000, newMarket: 78000 },
+    { name: "Xiaomi Redmi Note 11 / 12 / 13 Pro", ru: "редми нот 11 12 13 про", category: "Xiaomi", low: 48000, market: 68000, high: 90000, defectLow: 24000, defectMarket: 36000, newMarket: 120000 },
+
+    // ================= POCO =================
+    { name: "Poco X3 NFC / X3 Pro", ru: "поко х3 нфс про x3 pro", category: "Poco", low: 32000, market: 45000, high: 58000, defectLow: 15000, defectMarket: 24000, newMarket: 85000 },
+    { name: "Poco X4 / X5 / F3 / F4 Pro", ru: "поко х4 х5 ф3 ф4 про", category: "Poco", low: 65000, market: 85000, high: 110000, defectLow: 32000, defectMarket: 48000, newMarket: 150000 },
+
+    // ================= CONSOLES =================
+    { name: "Sony PlayStation 3", ru: "плейстейшен 3 пс3 ps3", category: "Console", low: 25000, market: 35000, high: 45000, defectLow: 10000, defectMarket: 18000, newMarket: 70000 },
+    { name: "Sony PlayStation 4 Fat / Slim", ru: "плейстейшен 4 слим фатка пс4 ps4 slim", category: "Console", low: 45000, market: 60000, high: 75000, defectLow: 22000, defectMarket: 34000, newMarket: 120000 },
+    { name: "Sony PlayStation 4 Pro 1TB", ru: "плейстейшен 4 про пс4 про ps4 pro", category: "Console", low: 65000, market: 82000, high: 98000, defectLow: 38000, defectMarket: 50000, newMarket: 155000 },
+    { name: "Sony PlayStation 5 (Digital / Disc)", ru: "плейстейшен 5 пс5 ps5", category: "Console", low: 160000, market: 190000, high: 220000, defectLow: 95000, defectMarket: 130000, newMarket: 250000 }
+  ];
+
+  let currentCondition = 'used';
+  let showDefects = false;
+  let selectedCategory = 'all';
+
+  function setCondition(cond) {
+    currentCondition = cond;
+    showDefects = false;
+    document.getElementById('btnUsed').classList.toggle('active', cond === 'used');
+    document.getElementById('btnNew').classList.toggle('active', cond === 'new');
+    document.getElementById('btnDefect').classList.remove('defect-active');
+    render();
+  }
+
+  function toggleDefect() {
+    showDefects = !showDefects;
+    document.getElementById('btnDefect').classList.toggle('defect-active', showDefects);
+    if(showDefects) {
+      document.getElementById('btnUsed').classList.remove('active');
+      document.getElementById('btnNew').classList.remove('active');
+    } else {
+      setCondition('used');
+    }
+    render();
+  }
+
+  function setCategory(cat, element) {
+    selectedCategory = cat;
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    element.classList.add('active');
+    render();
+  }
+
+  function formatPrice(val) {
+    return val.toLocaleString('ru-RU') + ' ₸';
+  }
+
+  function render() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const list = document.getElementById('devicesList');
+    list.innerHTML = '';
+
+    let filtered = devices.filter(d => {
+      const matchesCategory = (selectedCategory === 'all' || d.category === selectedCategory);
+      const matchesQuery = query === '' || 
+        d.name.toLowerCase().includes(query) || 
+        d.category.toLowerCase().includes(query) || 
+        (d.ru && d.ru.toLowerCase().includes(query));
+      return matchesCategory && matchesQuery;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="empty-msg">Модель не найдена в базе</div>';
+      return;
+    }
+
+    filtered.forEach(d => {
+      let priceHTML = '';
+
+      if (showDefects) {
+        priceHTML = `
+          <div class="price-item">
+            <div class="price-label">Heavy / Parts</div>
+            <div class="price-value defect">${formatPrice(d.defectLow)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Screen / Battery</div>
+            <div class="price-value defect">${formatPrice(d.defectMarket)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Minor Defect</div>
+            <div class="price-value market">${formatPrice(d.low)}</div>
+          </div>
+        `;
+      } else if (currentCondition === 'new') {
+        priceHTML = `
+          <div class="price-item" style="grid-column: span 3;">
+            <div class="price-label">Brand New Sealed</div>
+            <div class="price-value market">${formatPrice(d.newMarket)}</div>
+          </div>
+        `;
+      } else {
+        priceHTML = `
+          <div class="price-item">
+            <div class="price-label">Below Market</div>
+            <div class="price-value low">${formatPrice(d.low)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Average Market</div>
+            <div class="price-value market">${formatPrice(d.market)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Above Market</div>
+            <div class="price-value high">${formatPrice(d.high)}</div>
+          </div>
+        `;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'device-card';
+      card.innerHTML = `
+        <div class="device-title">${d.name}</div>
+        <div class="device-category">${d.category}</div>
+        <div class="price-grid">${priceHTML}</div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  // Первичный запуск отображения всей базы
+  render();
+</script>
+</body>
+  </html>
