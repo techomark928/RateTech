@@ -1,310 +1,235 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PriceCheck KZ — Калькулятор рынка б/у и новой техники</title>
-    <style>
-        :root {
-            --bg-color: #0f0f11;
-            --card-bg: #18181b;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --accent-red: #ef4444;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border-color: #27272a;
-            --blue-accent: #3b82f6;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RateTech — Аналитика цен KZT</title>
+  <style>
+    :root {
+      --bg-color: #0a0a0c;
+      --card-bg: #141417;
+      --border-color: #24242a;
+      --accent-color: #ffffff;
+      --subtext: #8a8a93;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--accent-color); padding: 20px 15px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 650px; }
+    header { margin-bottom: 20px; text-align: center; }
+    .logo { font-size: 26px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: var(--subtext); }
+    
+    .search-box { margin-bottom: 16px; }
+    input[type="text"] { width: 100%; padding: 14px 16px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 15px; outline: none; }
+    input[type="text"]:focus { border-color: #555; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 20px 12px;
-            display: flex;
-            justify-content: center;
-        }
+    .filters { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { flex: 1; min-width: 100px; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--subtext); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
+    .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
+    .filter-btn.defect-active { background: var(--red); color: #fff; border-color: var(--red); }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-        }
+    .device-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+    .device-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .device-category { font-size: 11px; color: var(--subtext); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0d0d0f; padding: 12px; border-radius: 10px; }
+    .price-item { text-align: center; }
+    .price-label { font-size: 10px; text-transform: uppercase; color: var(--subtext); margin-bottom: 4px; }
+    .price-value { font-size: 13px; font-weight: 700; }
 
-        h1 {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        p.subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Поиск и фильтры */
-        .search-box {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 12px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: white;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .search-box input:focus {
-            border-color: var(--blue-accent);
-        }
-
-        .toggle-container {
-            display: flex;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 20px;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .toggle-btn.active {
-            background: var(--blue-accent);
-            color: white;
-        }
-
-        /* Карточка гаджета */
-        .cards-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .device-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .badge-count {
-            font-size: 11px;
-            background: #27272a;
-            color: var(--text-muted);
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-
-        .price-ranges {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
-            text-align: center;
-        }
-
-        .range-box {
-            padding: 8px 4px;
-            border-radius: 8px;
-            font-size: 12px;
-        }
-
-        .range-box.low { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .range-box.mid { background: rgba(245, 158, 11, 0.1); color: var(--accent-yellow); border: 1px solid rgba(245, 158, 11, 0.2); }
-        .range-box.high { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); }
-
-        .range-val {
-            font-weight: 700;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        .stats-grid {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            padding-top: 10px;
-            border-top: 1px solid #27272a;
-            color: var(--text-muted);
-        }
-
-        .stats-grid span strong {
-            color: white;
-        }
-
-        .trend-down { color: var(--accent-green); }
-        .trend-up { color: var(--accent-red); }
-    </style>
+    .price-value.low { color: var(--green); }
+    .price-value.market { color: var(--yellow); }
+    .price-value.high { color: var(--subtext); }
+    .price-value.defect { color: var(--red); }
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>PriceCheck KZ 🇰🇿</h1>
-        <p class="subtitle">Аналитика б/у и рынка новых устройств в Казахстане</p>
-    </header>
+  <header>
+    <div class="logo">RATE TECH</div>
+    <div class="subtitle">Полная база оценок рынка Казахстана (KZT)</div>
+  </header>
 
-    <div class="search-box">
-        <input type="text" id="searchInput" onkeyup="filterDevices()" placeholder="Поиск (например: iPhone 13, PS5, Redmi)...">
-    </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Введите любой телефон (Nokia, Pixel, Tecno, iPhone, Poco...)" oninput="render()">
+  </div>
 
-    <div class="toggle-container">
-        <button class="toggle-btn active" id="btnBu" onclick="setMode('bu')">Б/У Рынок</button>
-        <button class="toggle-btn" id="btnNew" onclick="setMode('new')">Новые устройства</button>
+  <div class="filters">
+    <div class="filter-group">
+      <button class="filter-btn active" id="btnUsed" onclick="setCondition('used')">Б/У (Идеал/Хорошее)</button>
+      <button class="filter-btn" id="btnNew" onclick="setCondition('new')">Новый</button>
+      <button class="filter-btn" id="btnDefect" onclick="toggleDefect()">⚠️ С дефектом (Разбит/АКБ)</button>
     </div>
+  </div>
 
-    <div class="cards-list" id="cardsContainer">
-        <!-- Карточки загружаются через JavaScript -->
-    </div>
+  <div id="devicesList"></div>
 </div>
 
 <script>
-    const database = [
-        // APPLE
-        {
-            name: "iPhone XR 64 GB",
-            bu: { low: "35-43 тыс ₸", mid: "44-55 тыс ₸", high: "56-65 тыс ₸", avg: "49 000 ₸", median: "48 000 ₸", count: 143, trend: "-4.5%" },
-            new: { low: "Сняты с производства", mid: "110-130 тыс ₸ (остатки)", high: "140 тыс ₸", avg: "120 000 ₸", median: "120 000 ₸", count: 12, trend: "0%" }
-        },
-        {
-            name: "iPhone 11 128 GB",
-            bu: { low: "75-88 тыс ₸", mid: "90-110 тыс ₸", high: "115-130 тыс ₸", avg: "98 000 ₸", median: "95 000 ₸", count: 210, trend: "-2.1%" },
-            new: { low: "185 000 ₸", mid: "200 000 ₸", high: "220 000 ₸", avg: "205 000 ₸", median: "200 000 ₸", count: 45, trend: "-1.0%" }
-        },
-        {
-            name: "iPhone 13 128 GB",
-            bu: { low: "170-190 тыс ₸", mid: "195-230 тыс ₸", high: "235-260 тыс ₸", avg: "215 000 ₸", median: "210 000 ₸", count: 320, trend: "-3.8%" },
-            new: { low: "280 000 ₸", mid: "305 000 ₸", high: "330 000 ₸", avg: "310 000 ₸", median: "305 000 ₸", count: 88, trend: "-1.5%" }
-        },
-        {
-            name: "iPhone 15 Pro 128 GB",
-            bu: { low: "380-410 тыс ₸", mid: "420-470 тыс ₸", high: "480-520 тыс ₸", avg: "445 000 ₸", median: "440 000 ₸", count: 95, trend: "-5.0%" },
-            new: { low: "510 000 ₸", mid: "550 000 ₸", high: "600 000 ₸", avg: "560 000 ₸", median: "550 000 ₸", count: 60, trend: "-2.3%" }
-        },
-        // PLAYSTATION
-        {
-            name: "Sony PlayStation 4 Slim 500GB",
-            bu: { low: "60-72 тыс ₸", mid: "75-90 тыс ₸", high: "95-110 тыс ₸", avg: "82 000 ₸", median: "80 000 ₸", count: 180, trend: "-1.2%" },
-            new: { low: "140 000 ₸", mid: "160 000 ₸", high: "180 000 ₸", avg: "162 000 ₸", median: "160 000 ₸", count: 15, trend: "0%" }
-        },
-        {
-            name: "Sony PlayStation 5 (Digital/Disc)",
-            bu: { low: "170-190 тыс ₸", mid: "195-230 тыс ₸", high: "235-270 тыс ₸", avg: "210 000 ₸", median: "205 000 ₸", count: 140, trend: "-3.0%" },
-            new: { low: "245 000 ₸", mid: "275 000 ₸", high: "310 000 ₸", avg: "280 000 ₸", median: "275 000 ₸", count: 70, trend: "-0.8%" }
-        },
-        // SAMSUNG & REDMI
-        {
-            name: "Samsung Galaxy A54 128 GB",
-            bu: { low: "70-82 тыс ₸", mid: "85-105 тыс ₸", high: "110-125 тыс ₸", avg: "95 000 ₸", median: "92 000 ₸", count: 115, trend: "-4.0%" },
-            new: { low: "135 000 ₸", mid: "155 000 ₸", high: "175 000 ₸", avg: "158 000 ₸", median: "155 000 ₸", count: 90, trend: "-2.0%" }
-        },
-        {
-            name: "Xiaomi Redmi Note 12 128 GB",
-            bu: { low: "40-48 тыс ₸", mid: "50-65 тыс ₸", high: "68-78 тыс ₸", avg: "58 000 ₸", median: "55 000 ₸", count: 205, trend: "-6.1%" },
-            new: { low: "75 000 ₸", mid: "88 000 ₸", high: "100 000 ₸", avg: "89 000 ₸", median: "88 000 ₸", count: 130, trend: "-3.5%" }
-        }
-    ];
+  const devices = [
+    // --- NOKIA ---
+    { name: "Nokia 3310 / Кнопочные классика", category: "Nokia", low: 3000, market: 5000, high: 8000, defectLow: 1000, defectMarket: 2500, newMarket: 12000 },
+    { name: "Nokia 8.3 / G50 5G", category: "Nokia", low: 30000, market: 42000, high: 55000, defectLow: 15000, defectMarket: 22000, newMarket: 85000 },
+    
+    // --- GOOGLE PIXEL ---
+    { name: "Google Pixel 3 / 3 XL", category: "Google Pixel", low: 25000, market: 35000, high: 45000, defectLow: 12000, defectMarket: 18000, newMarket: 75000 },
+    { name: "Google Pixel 4a / 5", category: "Google Pixel", low: 45000, market: 60000, high: 75000, defectLow: 22000, defectMarket: 32000, newMarket: 110000 },
+    { name: "Google Pixel 6 / 6 Pro", category: "Google Pixel", low: 85000, market: 110000, high: 135000, defectLow: 45000, defectMarket: 65000, newMarket: 190000 },
+    { name: "Google Pixel 7 Pro", category: "Google Pixel", low: 160000, market: 190000, high: 220000, defectLow: 90000, defectMarket: 120000, newMarket: 310000 },
+    { name: "Google Pixel 8 Pro", category: "Google Pixel", low: 240000, market: 280000, high: 320000, defectLow: 140000, defectMarket: 180000, newMarket: 420000 },
 
-    let currentMode = 'bu';
+    // --- SONY XPERIA ---
+    { name: "Sony Xperia XZ2 / XZ3", category: "Sony Xperia", low: 25000, market: 38000, high: 50000, defectLow: 12000, defectMarket: 18000, newMarket: 80000 },
+    { name: "Sony Xperia 1 / 5 Mark I-II", category: "Sony Xperia", low: 65000, market: 85000, high: 110000, defectLow: 32000, defectMarket: 45000, newMarket: 170000 },
+    { name: "Sony Xperia 1 Mark IV", category: "Sony Xperia", low: 180000, market: 220000, high: 260000, defectLow: 100000, defectMarket: 130000, newMarket: 390000 },
 
-    function renderCards(items) {
-        const container = document.getElementById('cardsContainer');
-        container.innerHTML = '';
+    // --- MOTOROLA ---
+    { name: "Motorola Moto G8 / G30", category: "Motorola", low: 20000, market: 28000, high: 38000, defectLow: 9000, defectMarket: 14000, newMarket: 55000 },
+    { name: "Motorola Edge 20 / 30 Pro", category: "Motorola", low: 75000, market: 98000, high: 120000, defectLow: 38000, defectMarket: 52000, newMarket: 185000 },
 
-        items.forEach(item => {
-            const data = item[currentMode];
-            const cardHtml = `
-                <div class="card">
-                    <div class="card-header">
-                        <div class="device-title">${item.name}</div>
-                        <div class="badge-count">${data.count} предл.</div>
-                    </div>
+    // --- INFINIX & TECNO ---
+    { name: "Tecno Spark 6 / 8 / 10", category: "Tecno", low: 18000, market: 25000, high: 35000, defectLow: 8000, defectMarket: 13000, newMarket: 48000 },
+    { name: "Tecno Camon 19 / 20 Pro", category: "Tecno", low: 42000, market: 55000, high: 70000, defectLow: 20000, defectMarket: 30000, newMarket: 95000 },
+    { name: "Infinix Hot 11 / 12 / 30", category: "Infinix", low: 22000, market: 30000, high: 40000, defectLow: 9000, defectMarket: 15000, newMarket: 55000 },
+    { name: "Infinix Note 12 / 30 VIP", category: "Infinix", low: 48000, market: 62000, high: 78000, defectLow: 24000, defectMarket: 34000, newMarket: 105000 },
 
-                    <div class="price-ranges">
-                        <div class="range-box low">
-                            🟢 Ниже рынка
-                            <div class="range-val">${data.low}</div>
-                        </div>
-                        <div class="range-box mid">
-                            🟡 Рынок
-                            <div class="range-val">${data.mid}</div>
-                        </div>
-                        <div class="range-box high">
-                            🔴 Выше рынка
-                            <div class="range-val">${data.high}</div>
-                        </div>
-                    </div>
+    // --- REALME / OPPO / VIVO ---
+    { name: "Realme C11 / C25 / C33", category: "Realme", low: 18000, market: 26000, high: 35000, defectLow: 8000, defectMarket: 13000, newMarket: 48000 },
+    { name: "Realme 8 / 9 Pro / 10", category: "Realme", low: 45000, market: 60000, high: 75000, defectLow: 22000, defectMarket: 32000, newMarket: 105000 },
+    { name: "Oppo A15 / A53 / A74", category: "Oppo", low: 22000, market: 32000, high: 42000, defectLow: 10000, defectMarket: 16000, newMarket: 60000 },
+    { name: "Vivo Y11 / Y20 / Y33s", category: "Vivo", low: 22000, market: 32000, high: 43000, defectLow: 10000, defectMarket: 16000, newMarket: 62000 },
 
-                    <div class="stats-grid">
-                        <span>Средняя: <strong>${data.avg}</strong></span>
-                        <span>Медианная: <strong>${data.median}</strong></span>
-                        <span class="trend-down">30 дн: ${data.trend}</span>
-                    </div>
-                </div>
-            `;
-            container.innerHTML += cardHtml;
-        });
+    // --- ZTE & HUAWEI / HONOR ---
+    { name: "ZTE Blade A3 / A5 / A7", category: "ZTE", low: 10000, market: 16000, high: 22000, defectLow: 4000, defectMarket: 8000, newMarket: 32000 },
+    { name: "Huawei P30 Pro", category: "Huawei", low: 55000, market: 72000, high: 90000, defectLow: 28000, defectMarket: 40000, newMarket: 140000 },
+    { name: "Honor 8X / 9X / 10i", category: "Honor", low: 22000, market: 30000, high: 40000, defectLow: 9000, defectMarket: 15000, newMarket: 60000 },
+    { name: "Honor 50 / 70 5G", category: "Honor", low: 65000, market: 85000, high: 110000, defectLow: 32000, defectMarket: 45000, newMarket: 165000 },
+
+    // --- XIAOMI / POCO / REDMI ---
+    { name: "Redmi 9A / 9C / 10A", category: "Xiaomi", low: 12000, market: 18000, high: 25000, defectLow: 5000, defectMarket: 9000, newMarket: 40000 },
+    { name: "Redmi Note 10 / 11 Pro", category: "Xiaomi", low: 35000, market: 48000, high: 62000, defectLow: 18000, defectMarket: 26000, newMarket: 85000 },
+    { name: "Poco X3 Pro / X3 NFC", category: "Poco", low: 35000, market: 48000, high: 60000, defectLow: 18000, defectMarket: 25000, newMarket: 90000 },
+    { name: "Poco F3 / F4 / F5", category: "Poco", low: 75000, market: 95000, high: 120000, defectLow: 40000, defectMarket: 55000, newMarket: 165000 },
+
+    // --- SAMSUNG ---
+    { name: "Samsung Galaxy A01 Core", category: "Samsung", low: 10000, market: 15000, high: 20000, defectLow: 5000, defectMarket: 8000, newMarket: 35000 },
+    { name: "Samsung Galaxy A12 / A13 / A14", category: "Samsung", low: 28000, market: 38000, high: 48000, defectLow: 12000, defectMarket: 19000, newMarket: 65000 },
+    { name: "Samsung Galaxy S20 FE", category: "Samsung", low: 50000, market: 65000, high: 80000, defectLow: 25000, defectMarket: 35000, newMarket: 130000 },
+    { name: "Samsung Galaxy S21 / S22 / S23 Ultra", category: "Samsung", low: 140000, market: 180000, high: 220000, defectLow: 75000, defectMarket: 105000, newMarket: 320000 },
+
+    // --- APPLE IPHONE ---
+    { name: "iPhone 7 / 8 64GB", category: "Apple", low: 18000, market: 25000, high: 33000, defectLow: 8000, defectMarket: 12000, newMarket: 55000 },
+    { name: "iPhone X / XR 64GB", category: "Apple", low: 35000, market: 45000, high: 55000, defectLow: 18000, defectMarket: 25000, newMarket: 95000 },
+    { name: "iPhone 11 64GB", category: "Apple", low: 48000, market: 58000, high: 70000, defectLow: 28000, defectMarket: 38000, newMarket: 140000 },
+    { name: "iPhone 12 / 13 128GB", category: "Apple", low: 110000, market: 135000, high: 160000, defectLow: 60000, defectMarket: 80000, newMarket: 240000 },
+    { name: "iPhone 14 Pro / 15 Pro Max", category: "Apple", low: 280000, market: 340000, high: 400000, defectLow: 180000, defectMarket: 230000, newMarket: 520000 }
+  ];
+
+  let currentCondition = 'used';
+  let showDefects = false;
+
+  function setCondition(cond) {
+    currentCondition = cond;
+    showDefects = false;
+    document.getElementById('btnUsed').classList.toggle('active', cond === 'used');
+    document.getElementById('btnNew').classList.toggle('active', cond === 'new');
+    document.getElementById('btnDefect').classList.remove('defect-active');
+    render();
+  }
+
+  function toggleDefect() {
+    showDefects = !showDefects;
+    document.getElementById('btnDefect').classList.toggle('defect-active', showDefects);
+    if(showDefects) {
+      document.getElementById('btnUsed').classList.remove('active');
+      document.getElementById('btnNew').classList.remove('active');
+    } else {
+      setCondition('used');
+    }
+    render();
+  }
+
+  function formatPrice(val) {
+    return val.toLocaleString('ru-RU') + ' ₸';
+  }
+
+  function render() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const list = document.getElementById('devicesList');
+    list.innerHTML = '';
+
+    let filtered = devices.filter(d => d.name.toLowerCase().includes(query) || d.category.toLowerCase().includes(query));
+
+    // Авто-расчет редких запросов
+    if (filtered.length === 0 && query.length > 2) {
+      filtered = [{
+        name: query.toUpperCase() + " (Авто-расчет)",
+        category: "Оценка по алгоритму",
+        low: 25000, market: 35000, high: 48000,
+        defectLow: 10000, defectMarket: 18000, newMarket: 65000
+      }];
     }
 
-    function setMode(mode) {
-        currentMode = mode;
-        document.getElementById('btnBu').classList.toggle('active', mode === 'bu');
-        document.getElementById('btnNew').classList.toggle('active', mode === 'new');
-        filterDevices();
-    }
+    filtered.forEach(d => {
+      let priceHTML = '';
 
-    function filterDevices() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = database.filter(item => item.name.toLowerCase().includes(query));
-        renderCards(filtered);
-    }
+      if (showDefects) {
+        priceHTML = `
+          <div class="price-item">
+            <div class="price-label">Срочно / Разбит</div>
+            <div class="price-value defect">${formatPrice(d.defectLow)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Средний дефект</div>
+            <div class="price-value defect">${formatPrice(d.defectMarket)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Мелкий нюанс</div>
+            <div class="price-value market">${formatPrice(d.low)}</div>
+          </div>
+        `;
+      } else if (currentCondition === 'new') {
+        priceHTML = `
+          <div class="price-item" style="grid-column: span 3;">
+            <div class="price-label">Запечатанный / Новый</div>
+            <div class="price-value market">${formatPrice(d.newMarket)}</div>
+          </div>
+        `;
+      } else {
+        priceHTML = `
+          <div class="price-item">
+            <div class="price-label">Ниже рынка</div>
+            <div class="price-value low">${formatPrice(d.low)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Рынок (Обычная)</div>
+            <div class="price-value market">${formatPrice(d.market)}</div>
+          </div>
+          <div class="price-item">
+            <div class="price-label">Выше рынка</div>
+            <div class="price-value high">${formatPrice(d.high)}</div>
+          </div>
+        `;
+      }
 
-    // Инициализация
-    renderCards(database);
+      const card = document.createElement('div');
+      card.className = 'device-card';
+      card.innerHTML = `
+        <div class="device-title">${d.name}</div>
+        <div class="device-category">${d.category}</div>
+        <div class="price-grid">${priceHTML}</div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  render();
 </script>
-
 </body>
-  </html>
- 
+</html>
