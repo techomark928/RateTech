@@ -38,7 +38,7 @@
     .filter-group { display: flex; gap: 8px; }
     .filter-btn { flex: 1; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--subtext); border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
     .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
-    .filter-btn.defect-active { background: var(--red); color: #fff; border-color: var(--red); }
+    .filter-btn.defect-active { background: var(--red); color: #fff; border-color: #fff; }
 
     .device-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
     .device-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
@@ -65,7 +65,7 @@
   </header>
 
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Поиск (айфон 11, редми 1с, а12, пс4...)" oninput="render()">
+    <input type="text" id="searchInput" placeholder="Поиск (айфон 11, редми 9, а12, пс4...)" oninput="render()">
   </div>
 
   <div class="categories-scroll">
@@ -81,7 +81,7 @@
     <div class="filter-group">
       <button class="filter-btn active" id="btnUsed" onclick="setCondition('used')">Used (Good)</button>
       <button class="filter-btn" id="btnNew" onclick="setCondition('new')">Brand New</button>
-      <button class="filter-btn" id="btnDefect" onclick="toggleDefect()">⚠️ Damaged / Defects</button>
+      <button class="filter-btn" id="btnDefect" onclick="toggleDefect()">⚠️ Минусы / Дефекты</button>
     </div>
   </div>
 
@@ -91,93 +91,50 @@
 <script>
   const devices = [
     // ================= APPLE IPHONE =================
-    { name: "Apple iPhone 7", ru: "айфон 7 iphone 7", category: "Apple", low: 18000, market: 26000, high: 34000, defectLow: 7000, defectMarket: 12000, newMarket: 52000 },
-    { name: "Apple iPhone 7 Plus", ru: "айфон 7 плюс iphone 7 plus", category: "Apple", low: 24000, market: 34000, high: 44000, defectLow: 10000, defectMarket: 15000, newMarket: 62000 },
-    { name: "Apple iPhone 8", ru: "айфон 8 iphone 8", category: "Apple", low: 26000, market: 36000, high: 45000, defectLow: 11000, defectMarket: 17000, newMarket: 68000 },
-    { name: "Apple iPhone 8 Plus", ru: "айфон 8 плюс iphone 8 plus", category: "Apple", low: 34000, market: 45000, high: 55000, defectLow: 14000, defectMarket: 21000, newMarket: 78000 },
-    { name: "Apple iPhone X", ru: "айфон х iphone x 10", category: "Apple", low: 38000, market: 48000, high: 58000, defectLow: 18000, defectMarket: 26000, newMarket: 95000 },
-    { name: "Apple iPhone XR", ru: "айфон хр iphone xr", category: "Apple", low: 42000, market: 52000, high: 62000, defectLow: 20000, defectMarket: 28000, newMarket: 105000 },
-    { name: "Apple iPhone XS", ru: "айфон хс iphone xs", category: "Apple", low: 45000, market: 56000, high: 68000, defectLow: 22000, defectMarket: 30000, newMarket: 115000 },
-    { name: "Apple iPhone XS Max", ru: "айфон хс макс iphone xs max", category: "Apple", low: 58000, market: 72000, high: 88000, defectLow: 28000, defectMarket: 40000, newMarket: 135000 },
-    { name: "Apple iPhone 11", ru: "айфон 11 iphone 11", category: "Apple", low: 48000, market: 58000, high: 70000, defectLow: 25000, defectMarket: 35000, newMarket: 140000 },
-    { name: "Apple iPhone 11 Pro", ru: "айфон 11 про iphone 11 pro", category: "Apple", low: 68000, market: 82000, high: 95000, defectLow: 35000, defectMarket: 48000, newMarket: 180000 },
-    { name: "Apple iPhone 11 Pro Max", ru: "айфон 11 про макс iphone 11 pro max", category: "Apple", low: 85000, market: 105000, high: 125000, defectLow: 45000, defectMarket: 60000, newMarket: 210000 },
-    { name: "Apple iPhone 12 Mini", ru: "айфон 12 мини iphone 12 mini", category: "Apple", low: 75000, market: 90000, high: 105000, defectLow: 38000, defectMarket: 52000, newMarket: 175000 },
-    { name: "Apple iPhone 12", ru: "айфон 12 iphone 12", category: "Apple", low: 95000, market: 115000, high: 130000, defectLow: 50000, defectMarket: 70000, newMarket: 220000 },
-    { name: "Apple iPhone 12 Pro", ru: "айфон 12 про iphone 12 pro", category: "Apple", low: 125000, market: 148000, high: 170000, defectLow: 70000, defectMarket: 90000, newMarket: 250000 },
-    { name: "Apple iPhone 12 Pro Max", ru: "айфон 12 про макс iphone 12 pro max", category: "Apple", low: 145000, market: 170000, high: 195000, defectLow: 85000, defectMarket: 110000, newMarket: 280000 },
-    { name: "Apple iPhone 13 Mini", ru: "айфон 13 мини iphone 13 mini", category: "Apple", low: 115000, market: 135000, high: 155000, defectLow: 65000, defectMarket: 85000, newMarket: 225000 },
-    { name: "Apple iPhone 13", ru: "айфон 13 iphone 13", category: "Apple", low: 140000, market: 165000, high: 185000, defectLow: 85000, defectMarket: 110000, newMarket: 260000 },
-    { name: "Apple iPhone 13 Pro", ru: "айфон 13 про iphone 13 pro", category: "Apple", low: 185000, market: 215000, high: 245000, defectLow: 110000, defectMarket: 138000, newMarket: 330000 },
-    { name: "Apple iPhone 13 Pro Max", ru: "айфон 13 про макс iphone 13 pro max", category: "Apple", low: 200000, market: 235000, high: 265000, defectLow: 120000, defectMarket: 150000, newMarket: 360000 },
-    { name: "Apple iPhone 14", ru: "айфон 14 iphone 14", category: "Apple", low: 185000, market: 215000, high: 240000, defectLow: 105000, defectMarket: 135000, newMarket: 310000 },
-    { name: "Apple iPhone 14 Plus", ru: "айфон 14 плюс iphone 14 plus", category: "Apple", low: 210000, market: 245000, high: 275000, defectLow: 120000, defectMarket: 150000, newMarket: 350000 },
-    { name: "Apple iPhone 14 Pro", ru: "айфон 14 про iphone 14 pro", category: "Apple", low: 245000, market: 280000, high: 315000, defectLow: 145000, defectMarket: 180000, newMarket: 410000 },
-    { name: "Apple iPhone 14 Pro Max", ru: "айфон 14 про макс iphone 14 pro max", category: "Apple", low: 270000, market: 310000, high: 350000, defectLow: 165000, defectMarket: 205000, newMarket: 450000 },
-    { name: "Apple iPhone 15", ru: "айфон 15 iphone 15", category: "Apple", low: 260000, market: 300000, high: 335000, defectLow: 160000, defectMarket: 200000, newMarket: 400000 },
-    { name: "Apple iPhone 15 Plus", ru: "айфон 15 плюс iphone 15 plus", category: "Apple", low: 290000, market: 335000, high: 380000, defectLow: 180000, defectMarket: 220000, newMarket: 450000 },
-    { name: "Apple iPhone 15 Pro", ru: "айфон 15 про iphone 15 pro", category: "Apple", low: 340000, market: 390000, high: 430000, defectLow: 220000, defectMarket: 270000, newMarket: 520000 },
-    { name: "Apple iPhone 15 Pro Max", ru: "айфон 15 про макс iphone 15 pro max", category: "Apple", low: 400000, market: 460000, high: 520000, defectLow: 260000, defectMarket: 320000, newMarket: 610000 },
+    { name: "Apple iPhone 7", ru: "айфон 7 iphone 7", category: "Apple", low: 18000, market: 26000, high: 34000, newMarket: 52000, def1: "Без Touch ID", def1P: 7000, def2: "Заменен экран", def2P: 12000, def3: "АКБ < 75%", def3P: 15000 },
+    { name: "Apple iPhone 7 Plus", ru: "айфон 7 плюс iphone 7 plus", category: "Apple", low: 24000, market: 34000, high: 44000, newMarket: 62000, def1: "Без Touch ID", def1P: 10000, def2: "Заменен экран", def2P: 15000, def3: "АКБ < 75%", def3P: 18000 },
+    { name: "Apple iPhone 8", ru: "айфон 8 iphone 8", category: "Apple", low: 26000, market: 36000, high: 45000, newMarket: 68000, def1: "Без Touch ID", def1P: 11000, def2: "Заменен экран", def2P: 17000, def3: "АКБ < 75%", def3P: 20000 },
+    { name: "Apple iPhone 8 Plus", ru: "айфон 8 плюс iphone 8 plus", category: "Apple", low: 34000, market: 45000, high: 55000, newMarket: 78000, def1: "Без Touch ID", def1P: 14000, def2: "Заменен экран", def2P: 21000, def3: "АКБ < 75%", def3P: 25000 },
+    { name: "Apple iPhone X", ru: "айфон х iphone x 10", category: "Apple", low: 38000, market: 48000, high: 58000, newMarket: 95000, def1: "Без Face ID", def1P: 18000, def2: "Нет TrueTone / Экран", def2P: 26000, def3: "АКБ < 78%", def3P: 30000 },
+    { name: "Apple iPhone XR", ru: "айфон хр iphone xr", category: "Apple", low: 42000, market: 52000, high: 62000, newMarket: 105000, def1: "Без Face ID", def1P: 20000, def2: "Нет TrueTone / Экран", def2P: 28000, def3: "АКБ < 78%", def3P: 33000 },
+    { name: "Apple iPhone XS", ru: "айфон хс iphone xs", category: "Apple", low: 45000, market: 56000, high: 68000, newMarket: 115000, def1: "Без Face ID", def1P: 22000, def2: "Нет TrueTone / Экран", def2P: 30000, def3: "АКБ < 78%", def3P: 35000 },
+    { name: "Apple iPhone XS Max", ru: "айфон хс макс iphone xs max", category: "Apple", low: 58000, market: 72000, high: 88000, newMarket: 135000, def1: "Без Face ID", def1P: 28000, def2: "Нет TrueTone / Экран", def2P: 40000, def3: "АКБ < 78%", def3P: 45000 },
+    { name: "Apple iPhone 11", ru: "айфон 11 iphone 11", category: "Apple", low: 48000, market: 58000, high: 70000, newMarket: 140000, def1: "Без Face ID", def1P: 25000, def2: "Нет TrueTone / Экран", def2P: 35000, def3: "АКБ < 78%", def3P: 40000 },
+    { name: "Apple iPhone 11 Pro", ru: "айфон 11 про iphone 11 pro", category: "Apple", low: 68000, market: 82000, high: 95000, newMarket: 180000, def1: "Без Face ID", def1P: 35000, def2: "Нет TrueTone / Экран", def2P: 48000, def3: "АКБ < 78%", def3P: 55000 },
+    { name: "Apple iPhone 11 Pro Max", ru: "айфон 11 про макс iphone 11 pro max", category: "Apple", low: 85000, market: 105000, high: 125000, newMarket: 210000, def1: "Без Face ID", def1P: 45000, def2: "Нет TrueTone / Экран", def2P: 60000, def3: "АКБ < 78%", def3P: 70000 },
+    { name: "Apple iPhone 12 Mini", ru: "айфон 12 мини iphone 12 mini", category: "Apple", low: 75000, market: 90000, high: 105000, newMarket: 175000, def1: "Без Face ID", def1P: 38000, def2: "Ошибка дисплея", def2P: 52000, def3: "АКБ < 80%", def3P: 60000 },
+    { name: "Apple iPhone 12", ru: "айфон 12 iphone 12", category: "Apple", low: 95000, market: 115000, high: 130000, newMarket: 220000, def1: "Без Face ID", def1P: 50000, def2: "Ошибка дисплея", def2P: 70000, def3: "АКБ < 80%", def3P: 80000 },
+    { name: "Apple iPhone 12 Pro", ru: "айфон 12 про iphone 12 pro", category: "Apple", low: 125000, market: 148000, high: 170000, newMarket: 250000, def1: "Без Face ID", def1P: 70000, def2: "Ошибка дисплея", def2P: 90000, def3: "АКБ < 80%", def3P: 100000 },
+    { name: "Apple iPhone 12 Pro Max", ru: "айфон 12 про макс iphone 12 pro max", category: "Apple", low: 145000, market: 170000, high: 195000, newMarket: 280000, def1: "Без Face ID", def1P: 85000, def2: "Ошибка дисплея", def2P: 110000, def3: "АКБ < 80%", def3P: 120000 },
+    { name: "Apple iPhone 13 Mini", ru: "айфон 13 мини iphone 13 mini", category: "Apple", low: 115000, market: 135000, high: 155000, newMarket: 225000, def1: "Без Face ID", def1P: 65000, def2: "Ошибка дисплея", def2P: 85000, def3: "АКБ < 82%", def3P: 95000 },
+    { name: "Apple iPhone 13", ru: "айфон 13 iphone 13", category: "Apple", low: 140000, market: 165000, high: 185000, newMarket: 260000, def1: "Без Face ID", def1P: 85000, def2: "Ошибка дисплея", def2P: 110000, def3: "АКБ < 82%", def3P: 120000 },
+    { name: "Apple iPhone 13 Pro", ru: "айфон 13 про iphone 13 pro", category: "Apple", low: 185000, market: 215000, high: 245000, newMarket: 330000, def1: "Без Face ID", def1P: 110000, def2: "Ошибка дисплея", def2P: 138000, def3: "АКБ < 82%", def3P: 150000 },
+    { name: "Apple iPhone 13 Pro Max", ru: "айфон 13 про макс iphone 13 pro max", category: "Apple", low: 200000, market: 235000, high: 265000, newMarket: 360000, def1: "Без Face ID", def1P: 120000, def2: "Ошибка дисплея", def2P: 150000, def3: "АКБ < 82%", def3P: 165000 },
+    { name: "Apple iPhone 14", ru: "айфон 14 iphone 14", category: "Apple", low: 185000, market: 215000, high: 240000, newMarket: 310000, def1: "Без Face ID", def1P: 105000, def2: "Заменен экран", def2P: 135000, def3: "АКБ < 85%", def3P: 150000 },
+    { name: "Apple iPhone 14 Plus", ru: "айфон 14 плюс iphone 14 plus", category: "Apple", low: 210000, market: 245000, high: 275000, newMarket: 350000, def1: "Без Face ID", def1P: 120000, def2: "Заменен экран", def2P: 150000, def3: "АКБ < 85%", def3P: 170000 },
+    { name: "Apple iPhone 14 Pro", ru: "айфон 14 про iphone 14 pro", category: "Apple", low: 245000, market: 280000, high: 315000, newMarket: 410000, def1: "Без Face ID", def1P: 145000, def2: "Заменен экран", def2P: 180000, def3: "АКБ < 85%", def3P: 200000 },
+    { name: "Apple iPhone 14 Pro Max", ru: "айфон 14 про макс iphone 14 pro max", category: "Apple", low: 270000, market: 310000, high: 350000, newMarket: 450000, def1: "Без Face ID", def1P: 165000, def2: "Заменен экран", def2P: 205000, def3: "АКБ < 85%", def3P: 225000 },
+    { name: "Apple iPhone 15", ru: "айфон 15 iphone 15", category: "Apple", low: 260000, market: 300000, high: 335000, newMarket: 400000, def1: "Без Face ID", def1P: 160000, def2: "Заменен экран", def2P: 200000, def3: "АКБ < 88%", def3P: 220000 },
+    { name: "Apple iPhone 15 Plus", ru: "айфон 15 плюс iphone 15 plus", category: "Apple", low: 290000, market: 335000, high: 380000, newMarket: 450000, def1: "Без Face ID", def1P: 180000, def2: "Заменен экран", def2P: 220000, def3: "АКБ < 88%", def3P: 240000 },
+    { name: "Apple iPhone 15 Pro", ru: "айфон 15 про iphone 15 pro", category: "Apple", low: 340000, market: 390000, high: 430000, newMarket: 520000, def1: "Без Face ID", def1P: 220000, def2: "Заменен экран", def2P: 270000, def3: "АКБ < 88%", def3P: 295000 },
+    { name: "Apple iPhone 15 Pro Max", ru: "айфон 15 про макс iphone 15 pro max", category: "Apple", low: 400000, market: 460000, high: 520000, newMarket: 610000, def1: "Без Face ID", def1P: 260000, def2: "Заменен экран", def2P: 320000, def3: "АКБ < 88%", def3P: 350000 },
 
     // ================= SAMSUNG GALAXY =================
-    { name: "Samsung Galaxy A01 Core", ru: "самсунг а01 кор a01 core", category: "Samsung", low: 4000, market: 7000, high: 10000, defectLow: 1500, defectMarket: 3000, newMarket: 22000 },
-    { name: "Samsung Galaxy A01", ru: "самсунг а01 a01", category: "Samsung", low: 6000, market: 10000, high: 14000, defectLow: 2500, defectMarket: 4500, newMarket: 28000 },
-    { name: "Samsung Galaxy A02", ru: "самсунг а02 a02", category: "Samsung", low: 9000, market: 13000, high: 18000, defectLow: 3500, defectMarket: 6000, newMarket: 32000 },
-    { name: "Samsung Galaxy A02s", ru: "самсунг а02с a02s", category: "Samsung", low: 11000, market: 16000, high: 22000, defectLow: 4500, defectMarket: 7500, newMarket: 36000 },
-    { name: "Samsung Galaxy A03", ru: "самсунг а03 a03", category: "Samsung", low: 13000, market: 18000, high: 24000, defectLow: 5000, defectMarket: 8500, newMarket: 40000 },
-    { name: "Samsung Galaxy A03s", ru: "самсунг а03с a03s", category: "Samsung", low: 15000, market: 21000, high: 28000, defectLow: 6000, defectMarket: 10000, newMarket: 44000 },
-    { name: "Samsung Galaxy A10", ru: "самсунг а10 a10", category: "Samsung", low: 12000, market: 17000, high: 23000, defectLow: 5000, defectMarket: 8000, newMarket: 38000 },
-    { name: "Samsung Galaxy A11", ru: "самсунг а11 a11", category: "Samsung", low: 16000, market: 22000, high: 29000, defectLow: 6500, defectMarket: 10000, newMarket: 45000 },
-    { name: "Samsung Galaxy A12", ru: "самсунг а12 a12", category: "Samsung", low: 22000, market: 30000, high: 38000, defectLow: 9000, defectMarket: 14000, newMarket: 55000 },
-    { name: "Samsung Galaxy A13", ru: "самсунг а13 a13", category: "Samsung", low: 26000, market: 35000, high: 44000, defectLow: 11000, defectMarket: 17000, newMarket: 62000 },
-    { name: "Samsung Galaxy A14", ru: "самсунг а14 a14", category: "Samsung", low: 32000, market: 42000, high: 50000, defectLow: 14000, defectMarket: 20000, newMarket: 70000 },
-    { name: "Samsung Galaxy A15", ru: "самсунг а15 a15", category: "Samsung", low: 38000, market: 48000, high: 58000, defectLow: 16000, defectMarket: 24000, newMarket: 78000 },
-    { name: "Samsung Galaxy A22", ru: "самсунг а22 a22", category: "Samsung", low: 28000, market: 38000, high: 46000, defectLow: 12000, defectMarket: 18000, newMarket: 68000 },
-    { name: "Samsung Galaxy A23", ru: "самсунг а23 a23", category: "Samsung", low: 35000, market: 46000, high: 56000, defectLow: 15000, defectMarket: 22000, newMarket: 78000 },
-    { name: "Samsung Galaxy A24", ru: "самсунг а24 a24", category: "Samsung", low: 45000, market: 58000, high: 68000, defectLow: 20000, defectMarket: 30000, newMarket: 92000 },
-    { name: "Samsung Galaxy A32", ru: "самсунг а32 a32", category: "Samsung", low: 34000, market: 45000, high: 56000, defectLow: 14000, defectMarket: 22000, newMarket: 78000 },
-    { name: "Samsung Galaxy A33 5G", ru: "самсунг а33 a33", category: "Samsung", low: 48000, market: 62000, high: 75000, defectLow: 22000, defectMarket: 32000, newMarket: 105000 },
-    { name: "Samsung Galaxy A34 5G", ru: "самсунг а34 a34", category: "Samsung", low: 62000, market: 78000, high: 92000, defectLow: 28000, defectMarket: 40000, newMarket: 125000 },
-    { name: "Samsung Galaxy A51", ru: "самсунг а51 a51", category: "Samsung", low: 30000, market: 42000, high: 52000, defectLow: 12000, defectMarket: 19000, newMarket: 75000 },
-    { name: "Samsung Galaxy A52", ru: "самсунг а52 a52", category: "Samsung", low: 45000, market: 58000, high: 70000, defectLow: 20000, defectMarket: 30000, newMarket: 105000 },
-    { name: "Samsung Galaxy A53 5G", ru: "самсунг а53 a53", category: "Samsung", low: 58000, market: 74000, high: 88000, defectLow: 26000, defectMarket: 38000, newMarket: 130000 },
-    { name: "Samsung Galaxy A54 5G", ru: "самсунг а54 a54", category: "Samsung", low: 78000, market: 98000, high: 118000, defectLow: 38000, defectMarket: 52000, newMarket: 155000 },
-    { name: "Samsung Galaxy S21 Ultra", ru: "самсунг с21 ультра s21 ultra", category: "Samsung", low: 115000, market: 140000, high: 165000, defectLow: 60000, defectMarket: 80000, newMarket: 270000 },
-    { name: "Samsung Galaxy S22 Ultra", ru: "самсунг с22 ультра s22 ultra", category: "Samsung", low: 170000, market: 200000, high: 230000, defectLow: 95000, defectMarket: 125000, newMarket: 340000 },
-    { name: "Samsung Galaxy S23 Ultra", ru: "самсунг с23 ультра s23 ultra", category: "Samsung", low: 260000, market: 300000, high: 340000, defectLow: 160000, defectMarket: 200000, newMarket: 470000 },
+    { name: "Samsung Galaxy A12", ru: "самсунг а12 a12", category: "Samsung", low: 22000, market: 30000, high: 38000, newMarket: 55000, def1: "Разбит экран", def1P: 10000, def2: "Слабый АКБ", def2P: 15000, def3: "Царапины", def3P: 18000 },
+    { name: "Samsung Galaxy A23", ru: "самсунг а23 a23", category: "Samsung", low: 35000, market: 46000, high: 56000, newMarket: 78000, def1: "Разбит экран", def1P: 16000, def2: "Слабый АКБ", def2P: 24000, def3: "Царапины", def3P: 28000 },
+    { name: "Samsung Galaxy A52", ru: "самсунг а52 a52", category: "Samsung", low: 45000, market: 58000, high: 70000, newMarket: 105000, def1: "Разбит экран / Пятно", def1P: 22000, def2: "Нет отпечатка", def2P: 32000, def3: "Слабый АКБ", def3P: 38000 },
+    { name: "Samsung Galaxy S23 Ultra", ru: "самсунг с23 ультра s23 ultra", category: "Samsung", low: 260000, market: 300000, high: 340000, newMarket: 470000, def1: "Разбит экран / Потек", def1P: 140000, def2: "Без стилуса / Камера", def2P: 190000, def3: "Мелкие царапины", def3P: 230000 },
 
     // ================= XIAOMI / REDMI =================
-    { name: "Xiaomi Redmi 1", ru: "редми 1 сяоми redmi 1", category: "Xiaomi", low: 2000, market: 3500, high: 5000, defectLow: 1000, defectMarket: 2000, newMarket: 12000 },
-    { name: "Xiaomi Redmi 1S", ru: "редми 1с redmi 1s", category: "Xiaomi", low: 2500, market: 4500, high: 6500, defectLow: 1000, defectMarket: 2000, newMarket: 14000 },
-    { name: "Xiaomi Redmi 2", ru: "редми 2 redmi 2", category: "Xiaomi", low: 3000, market: 5000, high: 7500, defectLow: 1000, defectMarket: 2500, newMarket: 16000 },
-    { name: "Xiaomi Redmi 3", ru: "редми 3 redmi 3", category: "Xiaomi", low: 4500, market: 7000, high: 10000, defectLow: 1500, defectMarket: 3000, newMarket: 20000 },
-    { name: "Xiaomi Redmi 4", ru: "редми 4 redmi 4", category: "Xiaomi", low: 6500, market: 10000, high: 14000, defectLow: 2500, defectMarket: 4500, newMarket: 28000 },
-    { name: "Xiaomi Redmi 5", ru: "редми 5 redmi 5", category: "Xiaomi", low: 8500, market: 13000, high: 17000, defectLow: 3500, defectMarket: 6000, newMarket: 34000 },
-    { name: "Xiaomi Redmi 6", ru: "редми 6 redmi 6", category: "Xiaomi", low: 9500, market: 14000, high: 18000, defectLow: 3800, defectMarket: 6500, newMarket: 36000 },
-    { name: "Xiaomi Redmi 7", ru: "редми 7 redmi 7", category: "Xiaomi", low: 11000, market: 16000, high: 21000, defectLow: 4500, defectMarket: 8000, newMarket: 40000 },
-    { name: "Xiaomi Redmi 8", ru: "редми 8 redmi 8", category: "Xiaomi", low: 13500, market: 19000, high: 25000, defectLow: 5500, defectMarket: 9000, newMarket: 44000 },
-    { name: "Xiaomi Redmi 9", ru: "редми 9 redmi 9", category: "Xiaomi", low: 16000, market: 23000, high: 30000, defectLow: 7000, defectMarket: 12000, newMarket: 50000 },
-    { name: "Xiaomi Redmi 9A", ru: "редми 9а redmi 9a", category: "Xiaomi", low: 13000, market: 19000, high: 25000, defectLow: 5000, defectMarket: 9500, newMarket: 42000 },
-    { name: "Xiaomi Redmi 9C", ru: "редми 9с redmi 9c", category: "Xiaomi", low: 14500, market: 21000, high: 27000, defectLow: 6000, defectMarket: 10000, newMarket: 45000 },
-    { name: "Xiaomi Redmi 9T", ru: "редми 9т redmi 9t", category: "Xiaomi", low: 18000, market: 25000, high: 32000, defectLow: 8000, defectMarket: 13000, newMarket: 54000 },
-    { name: "Xiaomi Redmi 10", ru: "редми 10 redmi 10", category: "Xiaomi", low: 22000, market: 30000, high: 38000, defectLow: 10000, defectMarket: 16000, newMarket: 62000 },
-    { name: "Xiaomi Redmi 10C", ru: "редми 10с redmi 10c", category: "Xiaomi", low: 19000, market: 27000, high: 34000, defectLow: 8500, defectMarket: 14000, newMarket: 55000 },
-    { name: "Xiaomi Redmi 12", ru: "редми 12 redmi 12", category: "Xiaomi", low: 28000, market: 38000, high: 48000, defectLow: 14000, defectMarket: 20000, newMarket: 68000 },
-    { name: "Xiaomi Redmi Note 8 Pro", ru: "редми нот 8 про redmi note 8 pro", category: "Xiaomi", low: 24000, market: 32000, high: 40000, defectLow: 11000, defectMarket: 17000, newMarket: 58000 },
-    { name: "Xiaomi Redmi Note 9 Pro", ru: "редми нот 9 про redmi note 9 pro", category: "Xiaomi", low: 28000, market: 38000, high: 48000, defectLow: 13000, defectMarket: 20000, newMarket: 72000 },
-    { name: "Xiaomi Redmi Note 10 Pro", ru: "редми нот 10 про redmi note 10 pro", category: "Xiaomi", low: 38000, market: 52000, high: 65000, defectLow: 19000, defectMarket: 28000, newMarket: 90000 },
-    { name: "Xiaomi Redmi Note 11 Pro", ru: "редми нот 11 про redmi note 11 pro", category: "Xiaomi", low: 48000, market: 62000, high: 76000, defectLow: 24000, defectMarket: 35000, newMarket: 105000 },
+    { name: "Xiaomi Redmi 9", ru: "редми 9 redmi 9", category: "Xiaomi", low: 16000, market: 23000, high: 30000, newMarket: 50000, def1: "Разбит экран", def1P: 8000, def2: "Слабый АКБ", def2P: 12000, def3: "Тормозит", def3P: 14000 },
+    { name: "Xiaomi Redmi Note 10 Pro", ru: "редми нот 10 про redmi note 10 pro", category: "Xiaomi", low: 38000, market: 52000, high: 65000, newMarket: 90000, def1: "Разбит экран / AMOLED", def1P: 18000, def2: "Датчик приближения", def2P: 28000, def3: "Слабый АКБ", def3P: 32000 },
 
     // ================= POCO =================
-    { name: "Poco X3 NFC", ru: "поко х3 нфс poco x3 nfc", category: "Poco", low: 32000, market: 42000, high: 52000, defectLow: 15000, defectMarket: 22000, newMarket: 78000 },
-    { name: "Poco X3 Pro", ru: "поко х3 про poco x3 pro", category: "Poco", low: 38000, market: 50000, high: 62000, defectLow: 18000, defectMarket: 26000, newMarket: 90000 },
-    { name: "Poco X5 Pro 5G", ru: "поко х5 про poco x5 pro", category: "Poco", low: 65000, market: 82000, high: 100000, defectLow: 32000, defectMarket: 45000, newMarket: 145000 },
+    { name: "Poco X3 Pro", ru: "поко х3 про poco x3 pro", category: "Poco", low: 38000, market: 50000, high: 62000, newMarket: 90000, def1: "Процессор (отвал)", def1P: 15000, def2: "Разбит экран", def2P: 22000, def3: "Слабый АКБ", def3P: 30000 },
 
     // ================= CONSOLES =================
-    { name: "Sony PlayStation 3", ru: "плейстейшен 3 пс3 ps3", category: "Console", low: 25000, market: 35000, high: 45000, defectLow: 10000, defectMarket: 18000, newMarket: 70000 },
-    { name: "Sony PlayStation 4 Slim", ru: "плейстейшен 4 слим пс4 ps4 slim", category: "Console", low: 50000, market: 65000, high: 78000, defectLow: 28000, defectMarket: 38000, newMarket: 125000 },
-    { name: "Sony PlayStation 4 Pro", ru: "плейстейшен 4 про пс4 про ps4 pro", category: "Console", low: 65000, market: 82000, high: 98000, defectLow: 38000, defectMarket: 50000, newMarket: 155000 },
-    { name: "Sony PlayStation 5 Disc", ru: "плейстейшен 5 с диском пс5 ps5", category: "Console", low: 170000, market: 198000, high: 225000, defectLow: 105000, defectMarket: 135000, newMarket: 265000 }
+    { name: "Sony PlayStation 4 Slim", ru: "плейстейшен 4 слим пс4 ps4 slim", category: "Console", low: 50000, market: 65000, high: 78000, newMarket: 125000, def1: "Шумит / Греется", def1P: 32000, def2: "Не работает дисковод", def2P: 38000, def3: "Без геймпада", def3P: 44000 },
+    { name: "Sony PlayStation 5 Disc", ru: "плейстейшен 5 с диском пс5 ps5", category: "Console", low: 170000, market: 198000, high: 225000, newMarket: 265000, def1: "Шум дросселей", def1P: 120000, def2: "Проблемы с дисководом", def2P: 140000, def3: "Без геймпада", def3P: 150000 }
   ];
 
   let currentCondition = 'used';
@@ -195,8 +152,8 @@
 
   function toggleDefect() {
     showDefects = !showDefects;
-    document.getElementById('btnDefect').className = 'filter-btn ' + (showDefects ? 'defect-active'
-                                                                      if (showDefects) {
+    document.getElementById('btnDefect').className = 'filter-btn ' + (showDefects ? 'defect-active' : '');
+    if (showDefects) {
       document.getElementById('btnUsed').className = 'filter-btn';
       document.getElementById('btnNew').className = 'filter-btn';
     } else {
@@ -240,10 +197,17 @@
       let priceHTML = '';
 
       if (showDefects) {
+        let d1 = d.def1 || "Сильный дефект";
+        let p1 = d.def1P || Math.round(d.low * 0.6);
+        let d2 = d.def2 || "Средний дефект";
+        let p2 = d.def2P || Math.round(d.low * 0.75);
+        let d3 = d.def3 || "Мелкий дефект";
+        let p3 = d.def3P || Math.round(d.low * 0.85);
+
         priceHTML = `
-          <div class="price-item"><div class="price-label">Срочно/Хлам</div><div class="price-value defect">${formatPrice(d.defectLow)}</div></div>
-          <div class="price-item"><div class="price-label">Разбит/АКБ</div><div class="price-value defect">${formatPrice(d.defectMarket)}</div></div>
-          <div class="price-item"><div class="price-label">Мелкий дефект</div><div class="price-value market">${formatPrice(d.low)}</div></div>
+          <div class="price-item"><div class="price-label">${d1}</div><div class="price-value defect">${formatPrice(p1)}</div></div>
+          <div class="price-item"><div class="price-label">${d2}</div><div class="price-value defect">${formatPrice(p2)}</div></div>
+          <div class="price-item"><div class="price-label">${d3}</div><div class="price-value market">${formatPrice(p3)}</div></div>
         `;
       } else if (currentCondition === 'new') {
         priceHTML = `
